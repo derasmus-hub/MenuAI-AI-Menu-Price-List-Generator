@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ menu.business_name }} — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f5ff;
+    --text: #3d3347;
+    --muted: #8a7e94;
+    --accent: #d4a0a0;
+    --accent-light: #f0dede;
+    --line: #e8e0f0;
+    --card: #ffffff;
+    --shadow: rgba(100, 80, 120, 0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 400;
+    {% if pdf_mode %}
+    width: 210mm;
+    margin: 0 auto;
+    {% endif %}
+  }
+
+  .menu-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 56px 36px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+
+  .business-name {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .tagline {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  .category {
+    margin-bottom: 32px;
+  }
+
+  .category-name {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding: 8px 18px;
+    background: var(--accent-light);
+    border-radius: 12px;
+    display: inline-block;
+  }
+
+  .items-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 8px 20px;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+
+  .item-info {
+    flex: 1;
+    padding-right: 16px;
+  }
+
+  .item-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .item-description {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .item-price {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+  }
+
+  .footer p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .watermark {
+    margin-top: 12px;
+    font-size: 0.68rem;
+    opacity: 0.45;
+  }
+
+  @media print {
+    .menu-container { padding: 24px; }
+    .header-card, .items-card { box-shadow: none; }
+    .watermark { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="menu-container">
+    <div class="header">
+      <div class="header-card">
+        <h1 class="business-name">{{ menu.business_name }}</h1>
+        {% if menu.tagline %}
+        <p class="tagline">{{ menu.tagline }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% for category in menu.categories %}
+    <div class="category">
+      <h2 class="category-name">{{ category.name }}</h2>
+      <div class="items-card">
+        {% for item in category['items'] %}
+        <div class="menu-item">
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            {% if item.description %}
+            <div class="item-description">{{ item.description }}</div>
+            {% endif %}
+          </div>
+          <div class="item-price">{{ item.price }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+      <p>Ceny mogą ulec zmianie. Zapytaj o aktualną ofertę.</p>
+      {% if not is_paid %}<p class="watermark">Stworzone z MenuAI.pl</p>{% endif %}
+    </div>
+  </div>
+</body>
+</html>

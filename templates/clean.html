@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ menu.business_name }} — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #2d5a3d;
+    --line: #e0ddd8;
+    --card: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    {% if pdf_mode %}
+    width: 210mm;
+    margin: 0 auto;
+    {% endif %}
+  }
+
+  .menu-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .business-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .tagline {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .category {
+    margin-bottom: 36px;
+  }
+
+  .category-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dotted var(--line);
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+
+  .item-info {
+    flex: 1;
+    padding-right: 16px;
+  }
+
+  .item-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .item-description {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .item-price {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .watermark {
+    margin-top: 12px;
+    font-size: 0.7rem;
+    opacity: 0.5;
+  }
+
+  @media print {
+    .menu-container { padding: 24px; }
+    .watermark { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="menu-container">
+    <div class="header">
+      <h1 class="business-name">{{ menu.business_name }}</h1>
+      {% if menu.tagline %}
+      <p class="tagline">{{ menu.tagline }}</p>
+      {% endif %}
+    </div>
+
+    {% for category in menu.categories %}
+    <div class="category">
+      <h2 class="category-name">{{ category.name }}</h2>
+      {% for item in category['items'] %}
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-name">{{ item.name }}</div>
+          {% if item.description %}
+          <div class="item-description">{{ item.description }}</div>
+          {% endif %}
+        </div>
+        <div class="item-price">{{ item.price }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+      <p>Ceny mogą ulec zmianie. Zapytaj o aktualną ofertę.</p>
+      {% if not is_paid %}<p class="watermark">Stworzone z MenuAI.pl</p>{% endif %}
+    </div>
+  </div>
+</body>
+</html>

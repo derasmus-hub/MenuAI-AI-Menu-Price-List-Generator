@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ menu.business_name }} — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --card: #141414;
+    --text: #e0e0e0;
+    --muted: #707070;
+    --accent: #00e5ff;
+    --accent-dim: rgba(0, 229, 255, 0.15);
+    --line: #222;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 400;
+    {% if pdf_mode %}
+    width: 210mm;
+    margin: 0 auto;
+    {% endif %}
+  }
+
+  .menu-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    border-image: linear-gradient(180deg, var(--accent), transparent 70%) 1;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .accent-line {
+    width: 80px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 20px;
+    box-shadow: 0 0 8px var(--accent), 0 0 20px var(--accent-dim);
+  }
+
+  .business-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px var(--accent-dim), 0 0 30px rgba(0, 229, 255, 0.08);
+    margin-bottom: 8px;
+  }
+
+  .tagline {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .category {
+    margin-bottom: 36px;
+  }
+
+  .category-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    text-shadow: 0 0 8px var(--accent-dim), 0 0 20px rgba(0, 229, 255, 0.06);
+  }
+
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .menu-item:last-child {
+    border-bottom: none;
+  }
+
+  .item-info {
+    flex: 1;
+    padding-right: 16px;
+  }
+
+  .item-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .item-description {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  .item-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: var(--accent);
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .footer p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .watermark {
+    margin-top: 12px;
+    font-size: 0.65rem;
+    opacity: 0.4;
+  }
+
+  @media print {
+    .menu-container { padding: 24px; border-image: none; }
+    .watermark { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="menu-container">
+    <div class="header">
+      <div class="accent-line"></div>
+      <h1 class="business-name">{{ menu.business_name }}</h1>
+      {% if menu.tagline %}
+      <p class="tagline">{{ menu.tagline }}</p>
+      {% endif %}
+    </div>
+
+    {% for category in menu.categories %}
+    <div class="category">
+      <h2 class="category-name">{{ category.name }}</h2>
+      {% for item in category['items'] %}
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-name">{{ item.name }}</div>
+          {% if item.description %}
+          <div class="item-description">{{ item.description }}</div>
+          {% endif %}
+        </div>
+        <div class="item-price">{{ item.price }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+      <div class="accent-line"></div>
+      <p>Ceny mogą ulec zmianie.</p>
+      {% if not is_paid %}<p class="watermark">Stworzone z MenuAI.pl</p>{% endif %}
+    </div>
+  </div>
+</body>
+</html>

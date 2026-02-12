@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+.env.local
+
+# Node
+node_modules/
+dist/
+
+# Test outputs
+backend/test_output*.html
+
+# IDE
+.vscode/
+*.code-workspace
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

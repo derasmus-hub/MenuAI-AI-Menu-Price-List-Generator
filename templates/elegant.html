@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ menu.business_name }} — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1a1a;
+    --card: #222222;
+    --text: #e8e4dc;
+    --muted: #8a847a;
+    --accent: #c9a96e;
+    --line: #333;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 300;
+    {% if pdf_mode %}
+    width: 210mm;
+    margin: 0 auto;
+    {% endif %}
+  }
+
+  .menu-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 56px 40px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .ornament {
+    color: var(--accent);
+    font-size: 1.5rem;
+    letter-spacing: 0.5em;
+    margin-bottom: 16px;
+  }
+
+  .business-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .tagline {
+    font-size: 0.9rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: var(--accent);
+    margin: 24px auto;
+  }
+
+  .category {
+    margin-bottom: 40px;
+  }
+
+  .category-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+  }
+
+  .item-info {
+    flex: 1;
+    padding-right: 16px;
+  }
+
+  .item-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+
+  .item-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--line);
+    margin: 0 8px;
+    min-width: 30px;
+    align-self: center;
+    margin-bottom: 4px;
+  }
+
+  .item-description {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  .item-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+  }
+
+  .footer .ornament { font-size: 1rem; margin-bottom: 8px; }
+
+  .footer p {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .watermark {
+    margin-top: 12px;
+    font-size: 0.65rem;
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+  <div class="menu-container">
+    <div class="header">
+      <div class="ornament">✦ ✦ ✦</div>
+      <h1 class="business-name">{{ menu.business_name }}</h1>
+      {% if menu.tagline %}
+      <p class="tagline">{{ menu.tagline }}</p>
+      {% endif %}
+      <div class="divider"></div>
+    </div>
+
+    {% for category in menu.categories %}
+    <div class="category">
+      <h2 class="category-name">{{ category.name }}</h2>
+      {% for item in category['items'] %}
+      <div class="menu-item">
+        <div class="item-info">
+          <div class="item-name">{{ item.name }}</div>
+          {% if item.description %}
+          <div class="item-description">{{ item.description }}</div>
+          {% endif %}
+        </div>
+        <div class="item-price">{{ item.price }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="footer">
+      <div class="ornament">✦</div>
+      <p>Ceny mogą ulec zmianie.</p>
+      {% if not is_paid %}<p class="watermark">Stworzone z MenuAI.pl</p>{% endif %}
+    </div>
+  </div>
+</body>
+</html>
