@@ -15,10 +15,10 @@ from fastapi.responses import HTMLResponse, StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
-import anthropic
+from openai import OpenAI
 import os
 
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
 
 app = FastAPI(title="MenuAI", version="0.1.0")
 
@@ -45,7 +45,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 jinja_env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
@@ -129,10 +129,10 @@ Tekst użytkownika:
 
 @app.post("/api/parse", response_model=MenuData)
 async def parse_menu_text(req: ParseRequest):
-    """Parse raw text into structured menu data using Claude."""
+    """Parse raw text into structured menu data using OpenAI."""
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
             max_tokens=2000,
             messages=[{
                 "role": "user",
@@ -144,7 +144,7 @@ async def parse_menu_text(req: ParseRequest):
             }]
         )
 
-        raw = response.content[0].text.strip()
+        raw = response.choices[0].message.content.strip()
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
 
@@ -169,7 +169,7 @@ async def parse_menu_photo(
     business_name: str = Form("Moja Firma"),
     menu_type: str = Form("price_list"),
 ):
-    """Extract menu items from a photo using Claude Vision."""
+    """Extract menu items from a photo using OpenAI Vision."""
     contents = await file.read()
 
     if len(contents) > MAX_UPLOAD_SIZE:
@@ -184,16 +184,13 @@ async def parse_menu_photo(
     b64 = base64.b64encode(contents).decode()
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
             max_tokens=2000,
             messages=[{
                 "role": "user",
                 "content": [
-                    {
-                        "type": "image",
-                        "source": {"type": "base64", "media_type": media, "data": b64},
-                    },
+                    {"type": "image_url", "image_url": {"url": f"data:{media};base64,{b64}"}},
                     {
                         "type": "text",
                         "text": PARSE_PROMPT.format(
@@ -206,7 +203,7 @@ async def parse_menu_photo(
             }],
         )
 
-        raw = response.content[0].text.strip()
+        raw = response.choices[0].message.content.strip()
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[1].rsplit("```", 1)[0]
 
@@ -215,8 +212,6 @@ async def parse_menu_photo(
 
     except json.JSONDecodeError as e:
         raise HTTPException(400, f"Nie udało się odczytać menu ze zdjęcia: {e}")
-    except anthropic.BadRequestError as e:
-        raise HTTPException(400, f"Nie udało się przetworzyć obrazu: {e}")
     except Exception as e:
         raise HTTPException(500, f"Photo parse failed: {e}")
 
